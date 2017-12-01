@@ -3,6 +3,21 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: ''
+    }
+  }
+  componentDidMount() {
+    window.fetch('favicon.ico').then(function (res){
+      return res.blob();
+    }).then((res) => {
+      var img = new Image();
+      img.src = URL.createObjectURL(res);
+      document.body.appendChild(img);
+    });
+  }
   render() {
     return (
       <div className="App">
