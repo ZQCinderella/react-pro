@@ -3,23 +3,76 @@ import {connect} from 'react-redux';
 import TodoItem from './todoItem';
 import {FilterTypes} from '../../constants';
 
+import {spring, TransitionMotion} from 'react-motion';
 
+const willLeave = () => {
+  return {
+    height: spring(0),
+    opacity: spring(0)
+  };
+}
+
+const willEnter = () => {
+  return {
+    height: 0,
+    opacity: 0
+  };
+};
+const getStyles = (todos) => {
+  return todos.map(item => {
+    return {
+      key: item.id.toString(),
+      data: item,
+      style: {
+        height: spring(60),
+        opacity: spring(1)
+      }
+    };
+  });
+}
 class TodoList extends Component {
 	render() {
-		console.log('list change');
 		const {todos} = this.props;
-		return (
-			<ul className="todo-list">
-				{
-					todos.map(item => {
-						return <TodoItem 
-							key={item.id}
-							id={item.id}
-							{...item}
-						/>
-					})
+		const styles = getStyles(todos);
+		//style是height:60 opacity:1,  而default是height:0, opacity:0 所以刚加载时会有一个动画的过程
+		//因为item应用了style，动画由default --》style
+		const defaultStyle = todos.map(item => {
+			return {
+				key: item.id.toString(),
+				data: item,
+				style: {
+					height: spring(0),
+					opacity: spring(0)
 				}
-			</ul>
+			};
+		});
+		return (
+			<TransitionMotion
+      willLeave={willLeave}
+      willEnter={willEnter}
+      styles={styles}
+			defaultStyles={defaultStyle}
+    >
+      {
+        interpolatedStyles =>
+        <ul className="todo-list">
+          {
+            interpolatedStyles.map(config => {
+              const {data, style, key} = config;
+
+              const item = data;
+              return (<TodoItem
+                style={style}
+                key={key}
+                id={item.id}
+                text={item.text}
+                completed={item.completed}
+              />);
+            })
+          }
+        </ul>
+        }
+      </TransitionMotion>
 		);
 	}
 }
@@ -44,5 +97,5 @@ const mapStateToProps = (state) => {
 		todos: getState(state.todos, state.filter) 
 	}
 }
-export default connect(mapStateToProps, null)(TodoList)
+export default connect(mapStateToProps)(TodoList)
 

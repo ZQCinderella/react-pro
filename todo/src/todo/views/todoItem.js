@@ -9,15 +9,18 @@ class TodoItem extends Component{
 	constructor(props){
 		super(props);
 		console.log(props.text);
-	}
+  }
+  hhh
 	render() {
-		const { completed, onToggle, onRemove, text } = this.props;
+		const {style, completed, onToggle, onRemove, text } = this.props;
 		const cls = completed ? 'completed' : 'uncompleted';
 		const checkProp = completed ? {checked: true} : {};
 		console.log(this.props.text);
+		//使用了动画之后，每个item都要应用动画，所以要接受一下style属性
 		return (
 			<li className="todo-item" style={{
-			   textDecoration: completed ? 'line-through' : 'none'
+         textDecoration: completed ? 'line-through' : 'none',
+         ...style
 				}}>
 				<input className="toggle" type="checkbox" {...checkProp} readOnly onClick={onToggle}/>
 				<label className="text">{text}</label>
